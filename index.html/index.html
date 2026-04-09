@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExamZone CBT – JAMB English Language (60 Questions)</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cbt_english_styles.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     SCREEN 1: HOME
+══════════════════════════════ -->
+<div id="homeScreen" class="screen active">
+  <div class="home-inner">
+    <div class="home-badge"><span class="dot"></span> ExamZone · JAMB 2026 English CBT</div>
+    <h1 class="home-title">
+      <span class="hlg">English Language</span><br>
+      <span class="hlo">CBT Practice</span>
+    </h1>
+    <p class="home-sub">60 JAMB-style questions across Comprehension, Lexis &amp; Structure, Oral Forms, and The Lekki Headmaster novel. Timed. Scored. Explained.</p>
+
+    <!-- ALL QUESTIONS shortcut -->
+    <div class="all-card" id="allCard" onclick="startExam(null)">
+      <div class="all-card-icon">🚀</div>
+      <div class="all-card-text">
+        <div class="at">Full 60-Question Practice</div>
+        <div class="as">All sections combined · ~54 minutes · JAMB style</div>
+      </div>
+      <div class="all-card-arrow">→</div>
+    </div>
+
+    <div class="or-divider">or practice by section</div>
+
+    <!-- SECTION CARDS -->
+    <div class="step-lbl"><div class="step-num">1</div> Choose a Section</div>
+    <div class="sec-grid" id="sectionGrid"></div>
+
+    <!-- START by section -->
+    <div class="start-wrap">
+      <button class="start-btn" id="startExamBtn" disabled onclick="startExam(state.section)">
+        🖥️ Start Section Practice
+      </button>
+      <div class="start-info" id="startInfo">Select a section above to begin</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN 2: EXAM
+══════════════════════════════ -->
+<div id="examScreen" class="screen">
+  <div class="exam-topbar">
+    <div class="etb-back" onclick="confirmExit()">←</div>
+    <div class="etb-info">
+      <div class="etb-title" id="etbTitle">CBT Practice</div>
+      <div class="etb-meta" id="etbMeta">Loading...</div>
+    </div>
+    <div class="etb-timer" id="examTimer">
+      <div class="t" id="timerDisplay">30:00</div>
+      <div class="l">Time Left</div>
+    </div>
+  </div>
+
+  <div class="exam-progress">
+    <div class="exam-progress-fill" id="examProgFill" style="width:0%"></div>
+  </div>
+
+  <div class="exam-body">
+    <div class="q-header">
+      <div class="q-num" id="qNumDisplay">Question 1</div>
+      <div class="q-tags" id="qTagsDisplay"></div>
+    </div>
+
+    <button class="passage-toggle-btn" id="passageToggleBtn" onclick="togglePassage()">
+      📖 Read Passage
+    </button>
+    <div class="passage-box" id="passageBox"></div>
+
+    <div class="q-text" id="qText">Loading...</div>
+    <div class="opts" id="qOpts"></div>
+    <div class="expl-box" id="qExpl"></div>
+  </div>
+
+  <div class="q-nav">
+    <button class="q-map-toggle" onclick="toggleMap()">📋 <span id="mapCount">0/60</span></button>
+    <button class="qnav-btn" id="prevBtn" onclick="prevQ()">← Prev</button>
+    <button class="qnav-btn primary" id="nextBtn" onclick="nextQ()">Next →</button>
+    <button class="qnav-btn danger" onclick="confirmSubmit()">Submit</button>
+  </div>
+
+  <div class="q-map-panel" id="qMapPanel">
+    <div class="q-map-title">Question Navigator</div>
+    <div class="q-map-grid" id="qMapGrid"></div>
+    <div class="q-map-legend">
+      <div class="qml"><div class="qml-dot" style="background:rgba(46,204,113,.4)"></div>Answered</div>
+      <div class="qml"><div class="qml-dot" style="background:var(--goldl)"></div>Current</div>
+      <div class="qml"><div class="qml-dot" style="background:rgba(255,255,255,.1)"></div>Skipped</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN 3: RESULT
+══════════════════════════════ -->
+<div id="resultScreen" class="screen">
+  <div class="result-card">
+    <div class="result-lbl" id="resultLabel">Practice Complete</div>
+
+    <div class="score-ring">
+      <svg viewBox="0 0 140 140" width="140" height="140">
+        <circle cx="70" cy="70" r="60" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="10"/>
+        <circle cx="70" cy="70" r="60" fill="none" stroke="#2ECC71" stroke-width="10"
+          stroke-dasharray="377" stroke-dashoffset="377" id="scoreCircle" stroke-linecap="round"
+          style="transition: stroke-dashoffset .9s ease, stroke .5s ease"/>
+      </svg>
+      <div class="score-ring-inner">
+        <div class="score-num" id="scoreNum">0</div>
+        <div class="score-total" id="scoreTotal">/60</div>
+      </div>
+    </div>
+
+    <div class="score-pct" id="scorePct">0%</div>
+    <div class="result-grade" id="resultGrade">⭐</div>
+    <div class="result-msg" id="resultMsg"></div>
+
+    <div class="result-stats">
+      <div class="rs"><div class="rs-n" id="rsCorrect" style="color:#2ECC71">0</div><div class="rs-l">Correct</div></div>
+      <div class="rs"><div class="rs-n" id="rsWrong" style="color:var(--red)">0</div><div class="rs-l">Wrong</div></div>
+      <div class="rs"><div class="rs-n" id="rsSkipped" style="color:var(--goldl)">0</div><div class="rs-l">Skipped</div></div>
+    </div>
+
+    <!-- Section Breakdown -->
+    <div class="sec-breakdown">
+      <div class="sb-title">📊 Performance by Section</div>
+      <div id="secBreakdown"></div>
+    </div>
+
+    <!-- WhatsApp Channel CTA -->
+    <div id="waCta"></div>
+
+    <div class="result-btns">
+      <button class="rbtn rbtn-green" onclick="showReview()">📖 Review All Answers</button>
+      <button class="rbtn rbtn-ghost" onclick="retryExam()">🔁 Try Again</button>
+      <button class="rbtn rbtn-ghost" onclick="goHome()">🏠 Back to Menu</button>
+    </div>
+
+    <div class="review-list" id="reviewList" style="display:none"></div>
+  </div>
+</div>
+
+<script src="cbt_english_script.js"></script>
+</body>
+</html>
